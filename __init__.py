@@ -190,13 +190,62 @@ class PPWCTerminate:
         )
         return (output,)
 
+class PPWCLoraDetector:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls) -> dict[str, dict[str, Any]]:
+        return {
+            "required": {
+                "match": (
+                    "STRING",
+                    {
+                        "multiline": False,
+                        "dynamicPrompts": False,
+                        "tooltip": "Enter a match target",
+                    },
+                ),
+                "o": (
+                    "FLOAT",
+                    {
+                        "default": 1.0,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "tooltip": "Determines value to output when detected.",
+                    },
+                ),
+                "x": (
+                    "FLOAT",
+                    {
+                        "default": 0.0,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "tooltip": "Determines value to output when not detected.",
+                    },
+                ),
+                "input": ("STRING", {"forceInput": True}),
+            },
+        }
+
+    CATEGORY = "HSKOWildcard"
+    DESCRIPTION = "Detect pattern and output selected value."
+
+    RETURN_TYPES = ("FLOAT",)
+    RETURN_NAMES = ("output",)
+    FUNCTION = "detect"
+
+    def detect(self, input: str, match: str, o: float, x: float) -> tuple[float]:
+        return (o,) if match in input else (x,)
 
 NODE_CLASS_MAPPINGS: dict[str, Any] = {
     "PPWCReplace": PPWCReplace,
     "PPWCTerminate": PPWCTerminate,
+    "PPWCLoraDetector": PPWCLoraDetector,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "PPWCReplace": "Wildcard replace",
     "PPWCTerminate": "Wildcard termination",
+    "PPWCLoraDetector": "Lora detection",
 }
